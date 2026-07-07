@@ -11,7 +11,7 @@ export async function Header() {
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
         <Link href="/" className="flex items-center gap-2 text-xl font-black text-primary">
           <LogoMark />
-          Italiano con Verónica
+          Via Delle Lezioni
         </Link>
 
         <nav className="flex items-center gap-2">

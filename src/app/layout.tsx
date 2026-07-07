@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Italiano con Verónica",
+  title: "Via Delle Lezioni",
   description: "Clases de italiano con María Verónica Salinas",
 };
 
