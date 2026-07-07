@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "italiano-web-dev",
+      "runtimeExecutable": "C:\\Users\\lisan\\OneDrive\\Escritorio\\ITALIANO\\dev-server.cmd",
+      "runtimeArgs": [],
+      "port": 3000
+    }
+  ]
+}
