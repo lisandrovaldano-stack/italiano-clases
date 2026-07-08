@@ -44,6 +44,12 @@ export function UserMenu({ profile }: { profile: Profile }) {
           >
             {profile.role === "teacher" ? "Panel de profesora" : "Mis cursos"}
           </Link>
+          <Link
+            href="/dashboard/traductor"
+            className="block px-4 py-2 text-sm hover:bg-cream-dark"
+          >
+            Traductor IT ↔ ES
+          </Link>
           <form action={signOut}>
             <button
               type="submit"
