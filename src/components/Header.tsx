@@ -9,7 +9,10 @@ export async function Header() {
   return (
     <header>
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <Link href="/" className="flex items-center gap-2 text-xl font-black text-primary">
+        <Link
+          href="/"
+          className="flex items-center gap-2 text-xl font-black uppercase tracking-wide text-primary"
+        >
           <LogoMark />
           Via Delle Lezioni
         </Link>
