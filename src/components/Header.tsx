@@ -30,6 +30,14 @@ export async function Header() {
           >
             Cursos
           </Link>
+          {profile && (
+            <Link
+              href="/dashboard/traductor"
+              className="rounded-full bg-accent px-4 py-2 text-sm font-semibold text-white hover:opacity-90"
+            >
+              Traductor
+            </Link>
+          )}
         </nav>
 
         {profile ? (
