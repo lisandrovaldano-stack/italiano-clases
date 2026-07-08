@@ -37,7 +37,7 @@ export function UserMenu({ profile }: { profile: Profile }) {
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-2 w-48 rounded-xl border border-border bg-background shadow-lg overflow-hidden">
+        <div className="absolute right-0 z-50 mt-2 w-48 rounded-xl border border-border bg-background shadow-lg overflow-hidden">
           <Link
             href={profile.role === "teacher" ? "/admin" : "/dashboard"}
             className="block px-4 py-2 text-sm hover:bg-cream-dark"
