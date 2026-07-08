@@ -1,0 +1,52 @@
+<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+  <rect width="32" height="32" rx="8" fill="#fbfaf7" />
+  <rect x="1.5" y="1.5" width="29" height="29" rx="6.5" fill="none" stroke="#e3ded3" />
+
+  <ellipse cx="16" cy="27" rx="7.5" ry="1.6" fill="#008148" stroke="#22231f" stroke-width="0.5" />
+
+  <g transform="rotate(-10 16 26.3)">
+    <rect x="12" y="9" width="8" height="5.67" fill="#ce2b37" />
+    <rect x="12" y="14.67" width="8" height="5.66" fill="#fbfaf7" />
+    <rect x="12" y="20.33" width="8" height="5.67" fill="#008148" />
+
+    <rect x="12" y="9" width="8" height="17" fill="none" stroke="#22231f" stroke-width="0.6" />
+    <line x1="12" y1="14.67" x2="20" y2="14.67" stroke="#22231f" stroke-width="0.35" />
+    <line x1="12" y1="20.33" x2="20" y2="20.33" stroke="#22231f" stroke-width="0.35" />
+
+    <path d="M12,12.95 L12,10.05 A0.75,0.75 0 0 1 13.5,10.05 L13.5,12.95 Z" fill="none" stroke="#22231f" stroke-width="0.35" />
+    <path d="M13.65,12.95 L13.65,10.05 A0.75,0.75 0 0 1 15.15,10.05 L15.15,12.95 Z" fill="none" stroke="#22231f" stroke-width="0.35" />
+    <path d="M15.3,12.95 L15.3,10.05 A0.75,0.75 0 0 1 16.8,10.05 L16.8,12.95 Z" fill="none" stroke="#22231f" stroke-width="0.35" />
+    <path d="M16.95,12.95 L16.95,10.05 A0.75,0.75 0 0 1 18.45,10.05 L18.45,12.95 Z" fill="none" stroke="#22231f" stroke-width="0.35" />
+    <path d="M18.6,12.95 L18.6,10.05 A0.75,0.75 0 0 1 20.1,10.05 L20.1,12.95 Z" fill="none" stroke="#22231f" stroke-width="0.35" />
+
+    <path d="M12,17.2 L12,14.3 A0.75,0.75 0 0 1 13.5,14.3 L13.5,17.2 Z" fill="none" stroke="#22231f" stroke-width="0.35" />
+    <path d="M13.65,17.2 L13.65,14.3 A0.75,0.75 0 0 1 15.15,14.3 L15.15,17.2 Z" fill="none" stroke="#22231f" stroke-width="0.35" />
+    <path d="M15.3,17.2 L15.3,14.3 A0.75,0.75 0 0 1 16.8,14.3 L16.8,17.2 Z" fill="none" stroke="#22231f" stroke-width="0.35" />
+    <path d="M16.95,17.2 L16.95,14.3 A0.75,0.75 0 0 1 18.45,14.3 L18.45,17.2 Z" fill="none" stroke="#22231f" stroke-width="0.35" />
+    <path d="M18.6,17.2 L18.6,14.3 A0.75,0.75 0 0 1 20.1,14.3 L20.1,17.2 Z" fill="none" stroke="#22231f" stroke-width="0.35" />
+
+    <path d="M12,21.45 L12,18.55 A0.75,0.75 0 0 1 13.5,18.55 L13.5,21.45 Z" fill="none" stroke="#22231f" stroke-width="0.35" />
+    <path d="M13.65,21.45 L13.65,18.55 A0.75,0.75 0 0 1 15.15,18.55 L15.15,21.45 Z" fill="none" stroke="#22231f" stroke-width="0.35" />
+    <path d="M15.3,21.45 L15.3,18.55 A0.75,0.75 0 0 1 16.8,18.55 L16.8,21.45 Z" fill="none" stroke="#22231f" stroke-width="0.35" />
+    <path d="M16.95,21.45 L16.95,18.55 A0.75,0.75 0 0 1 18.45,18.55 L18.45,21.45 Z" fill="none" stroke="#22231f" stroke-width="0.35" />
+    <path d="M18.6,21.45 L18.6,18.55 A0.75,0.75 0 0 1 20.1,18.55 L20.1,21.45 Z" fill="none" stroke="#22231f" stroke-width="0.35" />
+
+    <path d="M12,25.7 L12,22.8 A0.75,0.75 0 0 1 13.5,22.8 L13.5,25.7 Z" fill="none" stroke="#22231f" stroke-width="0.35" />
+    <path d="M13.65,25.7 L13.65,22.8 A0.75,0.75 0 0 1 15.15,22.8 L15.15,25.7 Z" fill="none" stroke="#22231f" stroke-width="0.35" />
+    <path d="M15.3,25.7 L15.3,22.8 A0.75,0.75 0 0 1 16.8,22.8 L16.8,25.7 Z" fill="none" stroke="#22231f" stroke-width="0.35" />
+    <path d="M16.95,25.7 L16.95,22.8 A0.75,0.75 0 0 1 18.45,22.8 L18.45,25.7 Z" fill="none" stroke="#22231f" stroke-width="0.35" />
+    <path d="M18.6,25.7 L18.6,22.8 A0.75,0.75 0 0 1 20.1,22.8 L20.1,25.7 Z" fill="none" stroke="#22231f" stroke-width="0.35" />
+
+    <rect x="13" y="6.3" width="6" height="2.7" fill="#ce2b37" stroke="#22231f" stroke-width="0.5" />
+    <path d="M13.4,8.7 L13.4,7.25 A0.65,0.65 0 0 1 14.7,7.25 L14.7,8.7 Z" fill="none" stroke="#22231f" stroke-width="0.3" />
+    <path d="M15.15,8.7 L15.15,7.25 A0.65,0.65 0 0 1 16.45,7.25 L16.45,8.7 Z" fill="none" stroke="#22231f" stroke-width="0.3" />
+    <path d="M16.9,8.7 L16.9,7.25 A0.65,0.65 0 0 1 18.2,7.25 L18.2,8.7 Z" fill="none" stroke="#22231f" stroke-width="0.3" />
+
+    <path d="M12.8,6.3 Q16,4.4 19.2,6.3 Z" fill="#ce2b37" stroke="#22231f" stroke-width="0.5" stroke-linejoin="round" />
+
+    <line x1="16" y1="4.4" x2="16" y2="1.3" stroke="#22231f" stroke-width="0.5" />
+    <path d="M16,1.4 L19.2,2.3 L16,3.2 Z" fill="#fbfaf7" stroke="#22231f" stroke-width="0.3" />
+    <path d="M16,1.4 L17.07,1.7 L17.07,2.9 L16,3.2 Z" fill="#008148" />
+    <path d="M18.13,2 L19.2,2.3 L18.13,2.6 Z" fill="#ce2b37" />
+  </g>
+</svg>
