@@ -3,8 +3,15 @@ import { redirect, notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/lib/auth";
 import { enrollStudent, unenrollStudent } from "@/app/admin/actions";
-import { createSession, updateSessionEstado, uploadMaterial, updateCourse } from "./actions";
+import {
+  createSession,
+  updateSessionEstado,
+  uploadMaterial,
+  updateCourse,
+  deleteSession,
+} from "./actions";
 import { AttendanceToggle } from "@/components/AttendanceToggle";
+import { ConfirmSubmitButton } from "@/components/ConfirmSubmitButton";
 import type { ClassSession, Level, Profile } from "@/lib/database.types";
 
 const LEVELS: Level[] = ["A1", "A2", "B1", "B2", "C1", "C2"];
@@ -294,6 +301,16 @@ export default async function AdminCursoPage({
                   <button className="rounded-xl border border-border px-3 py-1.5 text-xs font-semibold hover:bg-cream-dark">
                     Guardar
                   </button>
+                </form>
+                <form action={deleteSession}>
+                  <input type="hidden" name="session_id" value={session.id} />
+                  <input type="hidden" name="course_id" value={course.id} />
+                  <ConfirmSubmitButton
+                    message={`¿Eliminar el encuentro #${session.numero}? Esto también borra la asistencia cargada para ese encuentro.`}
+                    className="rounded-xl border border-accent px-3 py-1.5 text-xs font-semibold text-accent hover:bg-accent-light"
+                  >
+                    Eliminar
+                  </ConfirmSubmitButton>
                 </form>
               </div>
 

@@ -49,6 +49,17 @@ export async function createSession(formData: FormData) {
   revalidatePath(`/dashboard/curso/${courseId}`);
 }
 
+export async function deleteSession(formData: FormData) {
+  const sessionId = String(formData.get("session_id"));
+  const courseId = String(formData.get("course_id"));
+
+  const supabase = await createClient();
+  await supabase.from("class_sessions").delete().eq("id", sessionId);
+
+  revalidatePath(`/admin/curso/${courseId}`);
+  revalidatePath(`/dashboard/curso/${courseId}`);
+}
+
 export async function updateSessionEstado(formData: FormData) {
   const sessionId = String(formData.get("session_id"));
   const courseId = String(formData.get("course_id"));
