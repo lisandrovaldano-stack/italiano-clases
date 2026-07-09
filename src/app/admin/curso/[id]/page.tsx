@@ -3,9 +3,11 @@ import { redirect, notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/lib/auth";
 import { enrollStudent, unenrollStudent } from "@/app/admin/actions";
-import { createSession, updateSessionEstado, uploadMaterial } from "./actions";
+import { createSession, updateSessionEstado, uploadMaterial, updateCourse } from "./actions";
 import { AttendanceToggle } from "@/components/AttendanceToggle";
-import type { ClassSession, Profile } from "@/lib/database.types";
+import type { ClassSession, Level, Profile } from "@/lib/database.types";
+
+const LEVELS: Level[] = ["A1", "A2", "B1", "B2", "C1", "C2"];
 
 export default async function AdminCursoPage({
   params,
@@ -78,6 +80,86 @@ export default async function AdminCursoPage({
           {course.level} · {course.schedule_text ?? "Sin horario"}
         </p>
       </div>
+
+      {/* Editar curso */}
+      <details className="rounded-3xl border border-border p-6">
+        <summary className="cursor-pointer text-sm font-bold uppercase tracking-wide">
+          ✎ Editar curso
+        </summary>
+        <form action={updateCourse} className="mt-4 grid gap-4 sm:grid-cols-2">
+          <input type="hidden" name="course_id" value={course.id} />
+          <div className="sm:col-span-2">
+            <label className="text-sm font-semibold">Título</label>
+            <input
+              name="title"
+              required
+              defaultValue={course.title}
+              className="mt-1 w-full rounded-xl border border-border bg-cream-dark px-4 py-2 outline-none focus:border-primary"
+            />
+          </div>
+          <div>
+            <label className="text-sm font-semibold">Nivel</label>
+            <select
+              name="level"
+              required
+              defaultValue={course.level}
+              className="mt-1 w-full rounded-xl border border-border bg-cream-dark px-4 py-2 outline-none focus:border-primary"
+            >
+              {LEVELS.map((l) => (
+                <option key={l} value={l}>
+                  {l}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="text-sm font-semibold">Horario</label>
+            <input
+              name="schedule_text"
+              defaultValue={course.schedule_text ?? ""}
+              className="mt-1 w-full rounded-xl border border-border bg-cream-dark px-4 py-2 outline-none focus:border-primary"
+              placeholder="Sábados de 17 a 18 hs"
+            />
+          </div>
+          <div>
+            <label className="text-sm font-semibold">Fecha de inicio</label>
+            <input
+              type="date"
+              name="start_date"
+              defaultValue={course.start_date ?? ""}
+              className="mt-1 w-full rounded-xl border border-border bg-cream-dark px-4 py-2 outline-none focus:border-primary"
+            />
+          </div>
+          <div>
+            <label className="text-sm font-semibold">Fecha de fin</label>
+            <input
+              type="date"
+              name="end_date"
+              defaultValue={course.end_date ?? ""}
+              className="mt-1 w-full rounded-xl border border-border bg-cream-dark px-4 py-2 outline-none focus:border-primary"
+            />
+          </div>
+          <div className="sm:col-span-2">
+            <label className="text-sm font-semibold">Descripción</label>
+            <textarea
+              name="description"
+              rows={3}
+              defaultValue={course.description ?? ""}
+              className="mt-1 w-full rounded-xl border border-border bg-cream-dark px-4 py-2 outline-none focus:border-primary"
+            />
+          </div>
+          <label className="flex items-center gap-2 text-sm font-semibold sm:col-span-2">
+            <input type="checkbox" name="is_active" defaultChecked={course.is_active} />
+            Curso activo (visible como &quot;activo&quot; en las estadísticas)
+          </label>
+          <button
+            type="submit"
+            className="rounded-full bg-primary px-6 py-2.5 text-sm font-bold text-white hover:bg-primary-dark sm:col-span-2"
+          >
+            Guardar cambios
+          </button>
+        </form>
+      </details>
 
       {/* Alumnos inscriptos */}
       <section className="rounded-3xl border border-border p-6">

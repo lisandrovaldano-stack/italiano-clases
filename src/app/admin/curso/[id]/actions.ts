@@ -2,7 +2,31 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import type { SessionStatus } from "@/lib/database.types";
+import type { Level, SessionStatus } from "@/lib/database.types";
+
+export async function updateCourse(formData: FormData) {
+  const courseId = String(formData.get("course_id"));
+  const supabase = await createClient();
+
+  await supabase
+    .from("courses")
+    .update({
+      title: String(formData.get("title")),
+      level: String(formData.get("level")) as Level,
+      description: String(formData.get("description") ?? "") || null,
+      schedule_text: String(formData.get("schedule_text") ?? "") || null,
+      start_date: String(formData.get("start_date") ?? "") || null,
+      end_date: String(formData.get("end_date") ?? "") || null,
+      is_active: formData.get("is_active") === "on",
+    })
+    .eq("id", courseId);
+
+  revalidatePath(`/admin/curso/${courseId}`);
+  revalidatePath("/admin");
+  revalidatePath("/cursos");
+  revalidatePath(`/cursos/${courseId}`);
+  revalidatePath(`/dashboard/curso/${courseId}`);
+}
 
 export async function createSession(formData: FormData) {
   const courseId = String(formData.get("course_id"));
