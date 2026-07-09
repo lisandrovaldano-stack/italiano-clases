@@ -8,6 +8,7 @@ import {
   updateSessionEstado,
   uploadMaterial,
   updateCourse,
+  deleteCourse,
   deleteSession,
 } from "./actions";
 import { AttendanceToggle } from "@/components/AttendanceToggle";
@@ -166,6 +167,18 @@ export default async function AdminCursoPage({
             Guardar cambios
           </button>
         </form>
+
+        <div className="mt-6 border-t border-border pt-4">
+          <form action={deleteCourse}>
+            <input type="hidden" name="course_id" value={course.id} />
+            <ConfirmSubmitButton
+              message={`¿Eliminar definitivamente el curso "${course.title}"? Esto borra también todos sus encuentros, inscripciones y asistencias. Esta acción no se puede deshacer.`}
+              className="rounded-full border border-accent px-5 py-2 text-sm font-semibold text-accent hover:bg-accent-light"
+            >
+              Eliminar curso definitivamente
+            </ConfirmSubmitButton>
+          </form>
+        </div>
       </details>
 
       {/* Alumnos inscriptos */}

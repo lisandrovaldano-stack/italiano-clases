@@ -1,8 +1,20 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { Level, SessionStatus } from "@/lib/database.types";
+
+export async function deleteCourse(formData: FormData) {
+  const courseId = String(formData.get("course_id"));
+  const supabase = await createClient();
+
+  await supabase.from("courses").delete().eq("id", courseId);
+
+  revalidatePath("/admin");
+  revalidatePath("/cursos");
+  redirect("/admin");
+}
 
 export async function updateCourse(formData: FormData) {
   const courseId = String(formData.get("course_id"));
