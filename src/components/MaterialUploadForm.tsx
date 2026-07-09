@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useTransition } from "react";
-import { uploadMaterial } from "@/app/admin/curso/[id]/actions";
+import { uploadMaterial, removeMaterial } from "@/app/admin/curso/[id]/actions";
 
 export function MaterialUploadForm({
   sessionId,
@@ -15,6 +15,7 @@ export function MaterialUploadForm({
   const fileRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState("");
   const [isPending, startTransition] = useTransition();
+  const [isRemoving, startRemoveTransition] = useTransition();
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -40,6 +41,20 @@ export function MaterialUploadForm({
     });
   }
 
+  function handleRemove() {
+    if (!confirm("¿Quitar el material subido para este encuentro?")) return;
+
+    const fd = new FormData();
+    fd.set("session_id", sessionId);
+    fd.set("course_id", courseId);
+    setError("");
+
+    startRemoveTransition(async () => {
+      const result = await removeMaterial(fd);
+      if (result?.error) setError(result.error);
+    });
+  }
+
   return (
     <div className="mt-3">
       <form onSubmit={handleSubmit} className="flex flex-wrap items-center gap-2">
@@ -52,14 +67,24 @@ export function MaterialUploadForm({
           {isPending ? "Subiendo…" : "Subir material"}
         </button>
         {materialUrl && (
-          <a
-            href={materialUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs font-semibold text-primary"
-          >
-            Ver material actual
-          </a>
+          <>
+            <a
+              href={materialUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs font-semibold text-primary"
+            >
+              Ver material actual
+            </a>
+            <button
+              type="button"
+              onClick={handleRemove}
+              disabled={isRemoving}
+              className="text-xs font-semibold text-accent hover:underline disabled:opacity-50"
+            >
+              {isRemoving ? "Quitando…" : "Quitar"}
+            </button>
+          </>
         )}
       </form>
       {error && <p className="mt-1 text-xs text-accent">{error}</p>}

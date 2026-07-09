@@ -125,6 +125,27 @@ export async function uploadMaterial(
   return {};
 }
 
+export async function removeMaterial(
+  formData: FormData
+): Promise<{ error?: string }> {
+  const sessionId = String(formData.get("session_id"));
+  const courseId = String(formData.get("course_id"));
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("class_sessions")
+    .update({ material_url: null })
+    .eq("id", sessionId);
+
+  if (error) {
+    return { error: `No se pudo quitar el material: ${error.message}` };
+  }
+
+  revalidatePath(`/admin/curso/${courseId}`);
+  revalidatePath(`/dashboard/curso/${courseId}`);
+  return {};
+}
+
 export async function setAttendance(formData: FormData) {
   const sessionId = String(formData.get("session_id"));
   const studentId = String(formData.get("student_id"));
