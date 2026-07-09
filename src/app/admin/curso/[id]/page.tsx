@@ -362,9 +362,7 @@ export default async function AdminCursoPage({
                         sessionId={session.id}
                         studentId={e.student_id}
                         courseId={course.id}
-                        defaultChecked={
-                          attendanceMap.get(`${session.id}:${e.student_id}`) ?? false
-                        }
+                        presente={attendanceMap.get(`${session.id}:${e.student_id}`)}
                       />
                     </div>
                   ))}

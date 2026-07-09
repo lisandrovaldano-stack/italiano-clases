@@ -116,7 +116,7 @@ export async function setAttendance(formData: FormData) {
   const sessionId = String(formData.get("session_id"));
   const studentId = String(formData.get("student_id"));
   const courseId = String(formData.get("course_id"));
-  const presente = formData.get("presente") === "on";
+  const presente = formData.get("presente") === "true";
 
   const supabase = await createClient();
   await supabase
