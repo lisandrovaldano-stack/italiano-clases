@@ -6,13 +6,13 @@ import { enrollStudent, unenrollStudent } from "@/app/admin/actions";
 import {
   createSession,
   updateSessionEstado,
-  uploadMaterial,
   updateCourse,
   deleteCourse,
   deleteSession,
 } from "./actions";
 import { AttendanceToggle } from "@/components/AttendanceToggle";
 import { ConfirmSubmitButton } from "@/components/ConfirmSubmitButton";
+import { MaterialUploadForm } from "@/components/MaterialUploadForm";
 import type { ClassSession, Level, Profile } from "@/lib/database.types";
 
 const LEVELS: Level[] = ["A1", "A2", "B1", "B2", "C1", "C2"];
@@ -331,24 +331,11 @@ export default async function AdminCursoPage({
                 <p className="mt-2 text-sm text-foreground/70">{session.temario}</p>
               )}
 
-              <form action={uploadMaterial} className="mt-3 flex items-center gap-2">
-                <input type="hidden" name="session_id" value={session.id} />
-                <input type="hidden" name="course_id" value={course.id} />
-                <input type="file" name="file" className="text-xs" />
-                <button className="rounded-xl border border-border px-3 py-1.5 text-xs font-semibold hover:bg-cream-dark">
-                  Subir material
-                </button>
-                {session.material_url && (
-                  <a
-                    href={session.material_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs font-semibold text-primary"
-                  >
-                    Ver material actual
-                  </a>
-                )}
-              </form>
+              <MaterialUploadForm
+                sessionId={session.id}
+                courseId={course.id}
+                materialUrl={session.material_url}
+              />
 
               {enrolled.length > 0 && (
                 <div className="mt-4 grid gap-2 sm:grid-cols-2">

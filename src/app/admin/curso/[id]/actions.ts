@@ -87,29 +87,42 @@ export async function updateSessionEstado(formData: FormData) {
   revalidatePath(`/dashboard/curso/${courseId}`);
 }
 
-export async function uploadMaterial(formData: FormData) {
+export async function uploadMaterial(
+  formData: FormData
+): Promise<{ error?: string }> {
   const sessionId = String(formData.get("session_id"));
   const courseId = String(formData.get("course_id"));
   const file = formData.get("file") as File;
 
-  if (!file || file.size === 0) return;
+  if (!file || file.size === 0) {
+    return { error: "Elegí un archivo primero." };
+  }
 
   const supabase = await createClient();
-  const path = `${courseId}/${sessionId}-${file.name}`;
+  const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, "_");
+  const path = `${courseId}/${sessionId}-${Date.now()}-${safeName}`;
+
   const { error } = await supabase.storage
     .from("materiales")
     .upload(path, file, { upsert: true });
 
-  if (!error) {
-    const { data } = supabase.storage.from("materiales").getPublicUrl(path);
-    await supabase
-      .from("class_sessions")
-      .update({ material_url: data.publicUrl })
-      .eq("id", sessionId);
+  if (error) {
+    return { error: `No se pudo subir el archivo: ${error.message}` };
+  }
+
+  const { data } = supabase.storage.from("materiales").getPublicUrl(path);
+  const { error: updateError } = await supabase
+    .from("class_sessions")
+    .update({ material_url: data.publicUrl })
+    .eq("id", sessionId);
+
+  if (updateError) {
+    return { error: `Se subió el archivo pero no se pudo guardar: ${updateError.message}` };
   }
 
   revalidatePath(`/admin/curso/${courseId}`);
   revalidatePath(`/dashboard/curso/${courseId}`);
+  return {};
 }
 
 export async function setAttendance(formData: FormData) {
