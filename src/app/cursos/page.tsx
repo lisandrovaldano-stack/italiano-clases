@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { CourseCard } from "@/components/CourseCard";
 import { StatPill } from "@/components/StatPill";
 import { LevelFilter } from "@/components/LevelFilter";
+import { HeroCarousel } from "@/components/HeroCarousel";
 import type { Course, Level } from "@/lib/database.types";
 
 export default async function CursosPage({
@@ -30,7 +31,8 @@ export default async function CursosPage({
 
   return (
     <div className="mx-auto max-w-6xl space-y-8 px-6 py-10">
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary to-primary-dark p-8 text-white">
+      <div className="relative overflow-hidden rounded-3xl p-8 text-white">
+        <HeroCarousel />
         <span className="mb-4 inline-block rounded-full bg-white/15 px-4 py-1 text-sm font-semibold">
           <span className="mr-2 italic opacity-80">corso</span>
           Cursos de italiano
