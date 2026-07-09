@@ -1,4 +1,4 @@
-import type { ClassSession } from "@/lib/database.types";
+import type { ClassSession, Material } from "@/lib/database.types";
 
 const ESTADO_LABEL: Record<string, { label: string; className: string }> = {
   programado: { label: "Programado", className: "bg-primary-light text-primary" },
@@ -9,10 +9,12 @@ const ESTADO_LABEL: Record<string, { label: string; className: string }> = {
 export function SessionRow({
   session,
   presente,
+  materials = [],
   children,
 }: {
   session: ClassSession;
   presente?: boolean | null;
+  materials?: Material[];
   children?: React.ReactNode;
 }) {
   const estado = ESTADO_LABEL[session.estado];
@@ -48,15 +50,20 @@ export function SessionRow({
         {session.temario && (
           <p className="text-sm text-foreground/70">{session.temario}</p>
         )}
-        {session.material_url && (
-          <a
-            href={session.material_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block rounded-full border border-border px-4 py-1.5 text-xs font-semibold hover:bg-cream-dark"
-          >
-            ↓ Descargar material
-          </a>
+        {materials.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {materials.map((m) => (
+              <a
+                key={m.id}
+                href={m.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block rounded-full border border-border px-4 py-1.5 text-xs font-semibold hover:bg-cream-dark"
+              >
+                ↓ {m.file_name}
+              </a>
+            ))}
+          </div>
         )}
         {children}
       </div>

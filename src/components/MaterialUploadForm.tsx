@@ -2,20 +2,22 @@
 
 import { useRef, useState, useTransition } from "react";
 import { uploadMaterial, removeMaterial } from "@/app/admin/curso/[id]/actions";
+import type { Material } from "@/lib/database.types";
 
 export function MaterialUploadForm({
   sessionId,
   courseId,
-  materialUrl,
+  materials,
 }: {
   sessionId: string;
   courseId: string;
-  materialUrl: string | null;
+  materials: Material[];
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState("");
-  const [isPending, startTransition] = useTransition();
-  const [isRemoving, startRemoveTransition] = useTransition();
+  const [isUploading, startUploadTransition] = useTransition();
+  const [removingId, setRemovingId] = useState<string | null>(null);
+  const [, startRemoveTransition] = useTransition();
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -31,7 +33,7 @@ export function MaterialUploadForm({
     fd.set("file", file);
     setError("");
 
-    startTransition(async () => {
+    startUploadTransition(async () => {
       const result = await uploadMaterial(fd);
       if (result?.error) {
         setError(result.error);
@@ -41,53 +43,63 @@ export function MaterialUploadForm({
     });
   }
 
-  function handleRemove() {
-    if (!confirm("¿Quitar el material subido para este encuentro?")) return;
+  function handleRemove(materialId: string) {
+    if (!confirm("¿Quitar este material?")) return;
 
     const fd = new FormData();
-    fd.set("session_id", sessionId);
+    fd.set("material_id", materialId);
     fd.set("course_id", courseId);
     setError("");
+    setRemovingId(materialId);
 
     startRemoveTransition(async () => {
       const result = await removeMaterial(fd);
       if (result?.error) setError(result.error);
+      setRemovingId(null);
     });
   }
 
   return (
-    <div className="mt-3">
+    <div className="mt-3 space-y-2">
       <form onSubmit={handleSubmit} className="flex flex-wrap items-center gap-2">
         <input ref={fileRef} type="file" className="text-xs" />
         <button
           type="submit"
-          disabled={isPending}
+          disabled={isUploading}
           className="rounded-xl border border-border px-3 py-1.5 text-xs font-semibold hover:bg-cream-dark disabled:opacity-50"
         >
-          {isPending ? "Subiendo…" : "Subir material"}
+          {isUploading ? "Subiendo…" : "Subir material"}
         </button>
-        {materialUrl && (
-          <>
-            <a
-              href={materialUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs font-semibold text-primary"
-            >
-              Ver material actual
-            </a>
-            <button
-              type="button"
-              onClick={handleRemove}
-              disabled={isRemoving}
-              className="text-xs font-semibold text-accent hover:underline disabled:opacity-50"
-            >
-              {isRemoving ? "Quitando…" : "Quitar"}
-            </button>
-          </>
-        )}
       </form>
-      {error && <p className="mt-1 text-xs text-accent">{error}</p>}
+      {error && <p className="text-xs text-accent">{error}</p>}
+
+      {materials.length > 0 && (
+        <ul className="space-y-1.5">
+          {materials.map((m) => (
+            <li
+              key={m.id}
+              className="flex items-center justify-between gap-2 rounded-lg bg-cream-dark px-3 py-1.5"
+            >
+              <a
+                href={m.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="truncate text-xs font-semibold text-primary hover:underline"
+              >
+                ↓ {m.file_name}
+              </a>
+              <button
+                type="button"
+                onClick={() => handleRemove(m.id)}
+                disabled={removingId === m.id}
+                className="shrink-0 text-xs font-semibold text-accent hover:underline disabled:opacity-50"
+              >
+                {removingId === m.id ? "Quitando…" : "Quitar"}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

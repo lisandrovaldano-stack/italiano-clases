@@ -13,7 +13,7 @@ import {
 import { AttendanceToggle } from "@/components/AttendanceToggle";
 import { ConfirmSubmitButton } from "@/components/ConfirmSubmitButton";
 import { MaterialUploadForm } from "@/components/MaterialUploadForm";
-import type { ClassSession, Level, Profile } from "@/lib/database.types";
+import type { ClassSession, Level, Material, Profile } from "@/lib/database.types";
 
 const LEVELS: Level[] = ["A1", "A2", "B1", "B2", "C1", "C2"];
 
@@ -75,6 +75,20 @@ export default async function AdminCursoPage({
   const attendanceMap = new Map(
     (attendanceRows ?? []).map((a) => [`${a.session_id}:${a.student_id}`, a.presente])
   );
+
+  const { data: materialRows } = sessionIds.length
+    ? await supabase
+        .from("materials")
+        .select("*")
+        .in("session_id", sessionIds)
+        .order("created_at", { ascending: true })
+    : { data: [] };
+  const materialsMap = new Map<string, Material[]>();
+  for (const m of (materialRows ?? []) as Material[]) {
+    const list = materialsMap.get(m.session_id) ?? [];
+    list.push(m);
+    materialsMap.set(m.session_id, list);
+  }
 
   return (
     <div className="mx-auto max-w-5xl space-y-8 px-6 py-10">
@@ -334,7 +348,7 @@ export default async function AdminCursoPage({
               <MaterialUploadForm
                 sessionId={session.id}
                 courseId={course.id}
-                materialUrl={session.material_url}
+                materials={materialsMap.get(session.id) ?? []}
               />
 
               {enrolled.length > 0 && (

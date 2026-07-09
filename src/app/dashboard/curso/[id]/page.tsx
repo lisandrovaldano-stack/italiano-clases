@@ -3,7 +3,7 @@ import { redirect, notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/lib/auth";
 import { SessionRow } from "@/components/SessionRow";
-import type { ClassSession } from "@/lib/database.types";
+import type { ClassSession, Material } from "@/lib/database.types";
 
 export default async function BitacoraPage({
   params,
@@ -52,6 +52,17 @@ export default async function BitacoraPage({
   const dictadas = sessionList.filter((s) => s.estado === "dictado");
   const presentes = dictadas.filter((s) => attendanceMap.get(s.id)).length;
 
+  const sessionIds = sessionList.map((s) => s.id);
+  const { data: materialRows } = sessionIds.length
+    ? await supabase.from("materials").select("*").in("session_id", sessionIds)
+    : { data: [] };
+  const materialsMap = new Map<string, Material[]>();
+  for (const m of (materialRows ?? []) as Material[]) {
+    const list = materialsMap.get(m.session_id) ?? [];
+    list.push(m);
+    materialsMap.set(m.session_id, list);
+  }
+
   return (
     <div className="mx-auto max-w-4xl space-y-6 px-6 py-10">
       <Link href="/dashboard" className="text-sm font-semibold text-primary">
@@ -98,6 +109,7 @@ export default async function BitacoraPage({
               key={session.id}
               session={session}
               presente={attendanceMap.get(session.id)}
+              materials={materialsMap.get(session.id) ?? []}
             />
           ))
         )}

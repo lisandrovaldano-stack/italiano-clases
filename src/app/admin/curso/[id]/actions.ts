@@ -111,13 +111,14 @@ export async function uploadMaterial(
   }
 
   const { data } = supabase.storage.from("materiales").getPublicUrl(path);
-  const { error: updateError } = await supabase
-    .from("class_sessions")
-    .update({ material_url: data.publicUrl })
-    .eq("id", sessionId);
+  const { error: insertError } = await supabase.from("materials").insert({
+    session_id: sessionId,
+    file_name: file.name,
+    url: data.publicUrl,
+  });
 
-  if (updateError) {
-    return { error: `Se subió el archivo pero no se pudo guardar: ${updateError.message}` };
+  if (insertError) {
+    return { error: `Se subió el archivo pero no se pudo guardar: ${insertError.message}` };
   }
 
   revalidatePath(`/admin/curso/${courseId}`);
@@ -128,14 +129,11 @@ export async function uploadMaterial(
 export async function removeMaterial(
   formData: FormData
 ): Promise<{ error?: string }> {
-  const sessionId = String(formData.get("session_id"));
+  const materialId = String(formData.get("material_id"));
   const courseId = String(formData.get("course_id"));
 
   const supabase = await createClient();
-  const { error } = await supabase
-    .from("class_sessions")
-    .update({ material_url: null })
-    .eq("id", sessionId);
+  const { error } = await supabase.from("materials").delete().eq("id", materialId);
 
   if (error) {
     return { error: `No se pudo quitar el material: ${error.message}` };

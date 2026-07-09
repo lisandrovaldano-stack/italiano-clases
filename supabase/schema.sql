@@ -52,6 +52,23 @@ create table if not exists public.attendance (
   unique (session_id, student_id)
 );
 
+create table if not exists public.materials (
+  id uuid primary key default gen_random_uuid(),
+  session_id uuid not null references public.class_sessions (id) on delete cascade,
+  file_name text not null,
+  url text not null,
+  created_at timestamptz not null default now()
+);
+
+-- migra el material_url de una sola clase (esquema viejo) a la tabla nueva, sin duplicar si se corre de nuevo
+insert into public.materials (session_id, file_name, url)
+select cs.id, 'material', cs.material_url
+from public.class_sessions cs
+where cs.material_url is not null
+  and not exists (
+    select 1 from public.materials m where m.session_id = cs.id and m.url = cs.material_url
+  );
+
 -- ============ ALTA AUTOMÁTICA DE PERFIL ============
 -- Cuando alguien se registra (Supabase Auth), se crea automáticamente su fila en profiles.
 
@@ -97,6 +114,7 @@ alter table public.courses enable row level security;
 alter table public.enrollments enable row level security;
 alter table public.class_sessions enable row level security;
 alter table public.attendance enable row level security;
+alter table public.materials enable row level security;
 
 -- profiles: cada uno ve/edita su propio perfil; la profesora ve y edita todos.
 drop policy if exists "profiles_select_own_or_teacher" on public.profiles;
@@ -148,6 +166,22 @@ create policy "attendance_select_own_or_teacher" on public.attendance
 
 drop policy if exists "attendance_write_teacher" on public.attendance;
 create policy "attendance_write_teacher" on public.attendance
+  for all using (public.is_teacher()) with check (public.is_teacher());
+
+-- materials: el alumno ve los de cursos en los que está inscripto; la profesora ve y administra todos.
+drop policy if exists "materials_select_enrolled_or_teacher" on public.materials;
+create policy "materials_select_enrolled_or_teacher" on public.materials
+  for select using (
+    public.is_teacher()
+    or exists (
+      select 1 from public.class_sessions cs
+      join public.enrollments e on e.course_id = cs.course_id
+      where cs.id = materials.session_id and e.student_id = auth.uid()
+    )
+  );
+
+drop policy if exists "materials_write_teacher" on public.materials;
+create policy "materials_write_teacher" on public.materials
   for all using (public.is_teacher()) with check (public.is_teacher());
 
 -- ============ STORAGE: materiales de clase ============

@@ -48,6 +48,14 @@ export type Attendance = {
   nota: string | null;
 };
 
+export type Material = {
+  id: string;
+  session_id: string;
+  file_name: string;
+  url: string;
+  created_at: string;
+};
+
 export type Database = {
   public: {
     Tables: {
@@ -94,6 +102,12 @@ export type Database = {
         Row: Attendance;
         Insert: Partial<Attendance>;
         Update: Partial<Attendance>;
+        Relationships: [];
+      };
+      materials: {
+        Row: Material;
+        Insert: Partial<Material>;
+        Update: Partial<Material>;
         Relationships: [];
       };
     };
