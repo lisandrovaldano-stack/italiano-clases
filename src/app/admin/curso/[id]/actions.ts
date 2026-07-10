@@ -144,6 +144,72 @@ export async function removeMaterial(
   return {};
 }
 
+export async function createTask(formData: FormData): Promise<{ error?: string }> {
+  const sessionId = String(formData.get("session_id"));
+  const courseId = String(formData.get("course_id"));
+  const title = String(formData.get("title") ?? "").trim();
+  const description = String(formData.get("description") ?? "") || null;
+  const dueDate = String(formData.get("due_date") ?? "") || null;
+  const file = formData.get("file") as File | null;
+
+  if (!title) {
+    return { error: "Poné un título para la tarea." };
+  }
+
+  const supabase = await createClient();
+  let fileUrl: string | null = null;
+  let fileName: string | null = null;
+
+  if (file && file.size > 0) {
+    const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, "_");
+    const path = `${courseId}/tareas/${sessionId}-${Date.now()}-${safeName}`;
+    const { error: uploadError } = await supabase.storage
+      .from("materiales")
+      .upload(path, file, { upsert: true });
+
+    if (uploadError) {
+      return { error: `No se pudo subir el archivo: ${uploadError.message}` };
+    }
+
+    const { data } = supabase.storage.from("materiales").getPublicUrl(path);
+    fileUrl = data.publicUrl;
+    fileName = file.name;
+  }
+
+  const { error: insertError } = await supabase.from("tasks").insert({
+    session_id: sessionId,
+    title,
+    description,
+    due_date: dueDate,
+    file_name: fileName,
+    file_url: fileUrl,
+  });
+
+  if (insertError) {
+    return { error: `No se pudo guardar la tarea: ${insertError.message}` };
+  }
+
+  revalidatePath(`/admin/curso/${courseId}`);
+  revalidatePath(`/dashboard/curso/${courseId}`);
+  return {};
+}
+
+export async function deleteTask(formData: FormData): Promise<{ error?: string }> {
+  const taskId = String(formData.get("task_id"));
+  const courseId = String(formData.get("course_id"));
+
+  const supabase = await createClient();
+  const { error } = await supabase.from("tasks").delete().eq("id", taskId);
+
+  if (error) {
+    return { error: `No se pudo eliminar la tarea: ${error.message}` };
+  }
+
+  revalidatePath(`/admin/curso/${courseId}`);
+  revalidatePath(`/dashboard/curso/${courseId}`);
+  return {};
+}
+
 export async function setAttendance(formData: FormData) {
   const sessionId = String(formData.get("session_id"));
   const studentId = String(formData.get("student_id"));

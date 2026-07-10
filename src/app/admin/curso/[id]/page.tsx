@@ -13,7 +13,8 @@ import {
 import { AttendanceToggle } from "@/components/AttendanceToggle";
 import { ConfirmSubmitButton } from "@/components/ConfirmSubmitButton";
 import { MaterialUploadForm } from "@/components/MaterialUploadForm";
-import type { ClassSession, Level, Material, Profile } from "@/lib/database.types";
+import { TaskManager } from "@/components/TaskManager";
+import type { ClassSession, Level, Material, Profile, Task } from "@/lib/database.types";
 
 const LEVELS: Level[] = ["A1", "A2", "B1", "B2", "C1", "C2"];
 
@@ -88,6 +89,20 @@ export default async function AdminCursoPage({
     const list = materialsMap.get(m.session_id) ?? [];
     list.push(m);
     materialsMap.set(m.session_id, list);
+  }
+
+  const { data: taskRows } = sessionIds.length
+    ? await supabase
+        .from("tasks")
+        .select("*")
+        .in("session_id", sessionIds)
+        .order("created_at", { ascending: true })
+    : { data: [] };
+  const tasksMap = new Map<string, Task[]>();
+  for (const t of (taskRows ?? []) as Task[]) {
+    const list = tasksMap.get(t.session_id) ?? [];
+    list.push(t);
+    tasksMap.set(t.session_id, list);
   }
 
   return (
@@ -349,6 +364,12 @@ export default async function AdminCursoPage({
                 sessionId={session.id}
                 courseId={course.id}
                 materials={materialsMap.get(session.id) ?? []}
+              />
+
+              <TaskManager
+                sessionId={session.id}
+                courseId={course.id}
+                tasks={tasksMap.get(session.id) ?? []}
               />
 
               {enrolled.length > 0 && (

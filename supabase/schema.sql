@@ -60,6 +60,17 @@ create table if not exists public.materials (
   created_at timestamptz not null default now()
 );
 
+create table if not exists public.tasks (
+  id uuid primary key default gen_random_uuid(),
+  session_id uuid not null references public.class_sessions (id) on delete cascade,
+  title text not null,
+  description text,
+  due_date date,
+  file_name text,
+  file_url text,
+  created_at timestamptz not null default now()
+);
+
 -- migra el material_url de una sola clase (esquema viejo) a la tabla nueva, sin duplicar si se corre de nuevo
 insert into public.materials (session_id, file_name, url)
 select cs.id, 'material', cs.material_url
@@ -115,6 +126,7 @@ alter table public.enrollments enable row level security;
 alter table public.class_sessions enable row level security;
 alter table public.attendance enable row level security;
 alter table public.materials enable row level security;
+alter table public.tasks enable row level security;
 
 -- profiles: cada uno ve/edita su propio perfil; la profesora ve y edita todos.
 drop policy if exists "profiles_select_own_or_teacher" on public.profiles;
@@ -182,6 +194,22 @@ create policy "materials_select_enrolled_or_teacher" on public.materials
 
 drop policy if exists "materials_write_teacher" on public.materials;
 create policy "materials_write_teacher" on public.materials
+  for all using (public.is_teacher()) with check (public.is_teacher());
+
+-- tasks: el alumno ve las de cursos en los que está inscripto; la profesora ve y administra todas.
+drop policy if exists "tasks_select_enrolled_or_teacher" on public.tasks;
+create policy "tasks_select_enrolled_or_teacher" on public.tasks
+  for select using (
+    public.is_teacher()
+    or exists (
+      select 1 from public.class_sessions cs
+      join public.enrollments e on e.course_id = cs.course_id
+      where cs.id = tasks.session_id and e.student_id = auth.uid()
+    )
+  );
+
+drop policy if exists "tasks_write_teacher" on public.tasks;
+create policy "tasks_write_teacher" on public.tasks
   for all using (public.is_teacher()) with check (public.is_teacher());
 
 -- ============ STORAGE: materiales de clase ============

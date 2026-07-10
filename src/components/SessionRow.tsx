@@ -1,4 +1,4 @@
-import type { ClassSession, Material } from "@/lib/database.types";
+import type { ClassSession, Material, Task } from "@/lib/database.types";
 
 const ESTADO_LABEL: Record<string, { label: string; className: string }> = {
   programado: { label: "Programado", className: "bg-primary-light text-primary" },
@@ -6,15 +6,25 @@ const ESTADO_LABEL: Record<string, { label: string; className: string }> = {
   cancelado: { label: "Cancelado", className: "bg-accent-light text-accent" },
 };
 
+function formatDueDate(d: string) {
+  return new Date(`${d}T00:00:00`).toLocaleDateString("es-AR", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
+
 export function SessionRow({
   session,
   presente,
   materials = [],
+  tasks = [],
   children,
 }: {
   session: ClassSession;
   presente?: boolean | null;
   materials?: Material[];
+  tasks?: Task[];
   children?: React.ReactNode;
 }) {
   const estado = ESTADO_LABEL[session.estado];
@@ -62,6 +72,31 @@ export function SessionRow({
               >
                 ↓ {m.file_name}
               </a>
+            ))}
+          </div>
+        )}
+        {tasks.length > 0 && (
+          <div className="space-y-1.5">
+            {tasks.map((t) => (
+              <div key={t.id} className="rounded-xl bg-accent-light px-3 py-2">
+                <p className="text-sm font-semibold text-accent">📝 {t.title}</p>
+                {t.description && (
+                  <p className="text-xs text-foreground/70">{t.description}</p>
+                )}
+                <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-foreground/60">
+                  {t.due_date && <span>Entrega: {formatDueDate(t.due_date)}</span>}
+                  {t.file_url && (
+                    <a
+                      href={t.file_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-semibold text-primary hover:underline"
+                    >
+                      ↓ {t.file_name}
+                    </a>
+                  )}
+                </div>
+              </div>
             ))}
           </div>
         )}

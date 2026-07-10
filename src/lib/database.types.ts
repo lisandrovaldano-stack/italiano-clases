@@ -56,6 +56,17 @@ export type Material = {
   created_at: string;
 };
 
+export type Task = {
+  id: string;
+  session_id: string;
+  title: string;
+  description: string | null;
+  due_date: string | null;
+  file_name: string | null;
+  file_url: string | null;
+  created_at: string;
+};
+
 export type Database = {
   public: {
     Tables: {
@@ -108,6 +119,12 @@ export type Database = {
         Row: Material;
         Insert: Partial<Material>;
         Update: Partial<Material>;
+        Relationships: [];
+      };
+      tasks: {
+        Row: Task;
+        Insert: Partial<Task>;
+        Update: Partial<Task>;
         Relationships: [];
       };
     };

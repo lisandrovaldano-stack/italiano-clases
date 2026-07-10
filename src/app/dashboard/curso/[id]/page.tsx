@@ -3,7 +3,7 @@ import { redirect, notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/lib/auth";
 import { SessionRow } from "@/components/SessionRow";
-import type { ClassSession, Material } from "@/lib/database.types";
+import type { ClassSession, Material, Task } from "@/lib/database.types";
 
 export default async function BitacoraPage({
   params,
@@ -63,6 +63,16 @@ export default async function BitacoraPage({
     materialsMap.set(m.session_id, list);
   }
 
+  const { data: taskRows } = sessionIds.length
+    ? await supabase.from("tasks").select("*").in("session_id", sessionIds)
+    : { data: [] };
+  const tasksMap = new Map<string, Task[]>();
+  for (const t of (taskRows ?? []) as Task[]) {
+    const list = tasksMap.get(t.session_id) ?? [];
+    list.push(t);
+    tasksMap.set(t.session_id, list);
+  }
+
   return (
     <div className="mx-auto max-w-4xl space-y-6 px-6 py-10">
       <Link href="/dashboard" className="text-sm font-semibold text-primary">
@@ -110,6 +120,7 @@ export default async function BitacoraPage({
               session={session}
               presente={attendanceMap.get(session.id)}
               materials={materialsMap.get(session.id) ?? []}
+              tasks={tasksMap.get(session.id) ?? []}
             />
           ))
         )}
