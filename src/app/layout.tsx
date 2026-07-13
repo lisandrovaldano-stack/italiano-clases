@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/Header";
@@ -18,6 +18,18 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "VIA DELLE LEZIONI",
   description: "Clases de italiano con María Verónica Salinas",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Via Delle Lezioni",
+  },
+  icons: {
+    apple: "/icons/apple-touch-icon.png",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#008148",
 };
 
 export default function RootLayout({
