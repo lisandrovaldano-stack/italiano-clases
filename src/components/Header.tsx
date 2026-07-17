@@ -20,7 +20,7 @@ export async function Header() {
         <nav className="flex items-center gap-2">
           <Link
             href="/"
-            className="rounded-full px-4 py-2 text-sm font-semibold hover:bg-cream-dark"
+            className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary-dark"
           >
             Inicio
           </Link>
@@ -41,7 +41,7 @@ export async function Header() {
           {profile && (
             <Link
               href="/dashboard/biblioteca"
-              className="rounded-full border border-border px-4 py-2 text-sm font-semibold hover:bg-cream-dark"
+              className="rounded-full bg-accent px-4 py-2 text-sm font-semibold text-white hover:opacity-90"
             >
               Biblioteca
             </Link>
