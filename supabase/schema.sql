@@ -55,10 +55,13 @@ create table if not exists public.attendance (
 create table if not exists public.materials (
   id uuid primary key default gen_random_uuid(),
   session_id uuid not null references public.class_sessions (id) on delete cascade,
-  file_name text not null,
+  file_name text,
   url text not null,
   created_at timestamptz not null default now()
 );
+
+-- permite materiales que son solo un link (YouTube, etc.), sin archivo subido
+alter table public.materials alter column file_name drop not null;
 
 create table if not exists public.tasks (
   id uuid primary key default gen_random_uuid(),

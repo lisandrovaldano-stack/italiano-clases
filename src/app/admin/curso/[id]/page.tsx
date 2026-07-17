@@ -4,7 +4,6 @@ import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/lib/auth";
 import { enrollStudent, unenrollStudent } from "@/app/admin/actions";
 import {
-  createSession,
   updateSessionEstado,
   updateCourse,
   deleteCourse,
@@ -14,6 +13,7 @@ import { AttendanceToggle } from "@/components/AttendanceToggle";
 import { ConfirmSubmitButton } from "@/components/ConfirmSubmitButton";
 import { MaterialUploadForm } from "@/components/MaterialUploadForm";
 import { TaskManager } from "@/components/TaskManager";
+import { CreateSessionForm } from "@/components/CreateSessionForm";
 import type { ClassSession, Level, Material, Profile, Task } from "@/lib/database.types";
 
 const LEVELS: Level[] = ["A1", "A2", "B1", "B2", "C1", "C2"];
@@ -267,42 +267,7 @@ export default async function AdminCursoPage({
         <h2 className="mb-4 text-sm font-bold uppercase tracking-wide">
           Cargar nuevo encuentro
         </h2>
-        <form action={createSession} className="grid gap-4 sm:grid-cols-2">
-          <input type="hidden" name="course_id" value={course.id} />
-          <div>
-            <label className="text-sm font-semibold">Fecha y hora</label>
-            <input
-              type="datetime-local"
-              name="fecha"
-              required
-              className="mt-1 w-full rounded-xl border border-border bg-cream-dark px-4 py-2"
-            />
-          </div>
-          <div>
-            <label className="text-sm font-semibold">Estado</label>
-            <select
-              name="estado"
-              defaultValue="programado"
-              className="mt-1 w-full rounded-xl border border-border bg-cream-dark px-4 py-2"
-            >
-              <option value="programado">Programado</option>
-              <option value="dictado">Dictado</option>
-              <option value="cancelado">Cancelado</option>
-            </select>
-          </div>
-          <div className="sm:col-span-2">
-            <label className="text-sm font-semibold">Temario</label>
-            <textarea
-              name="temario"
-              rows={2}
-              className="mt-1 w-full rounded-xl border border-border bg-cream-dark px-4 py-2"
-              placeholder="Repaso de unidad 1, verbos regulares…"
-            />
-          </div>
-          <button className="rounded-full bg-primary px-6 py-2.5 text-sm font-bold text-white hover:bg-primary-dark sm:col-span-2">
-            Guardar encuentro
-          </button>
-        </form>
+        <CreateSessionForm courseId={course.id} />
       </section>
 
       {/* Historial de encuentros */}

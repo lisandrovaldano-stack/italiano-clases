@@ -51,7 +51,7 @@ export type Attendance = {
 export type Material = {
   id: string;
   session_id: string;
-  file_name: string;
+  file_name: string | null;
   url: string;
   created_at: string;
 };

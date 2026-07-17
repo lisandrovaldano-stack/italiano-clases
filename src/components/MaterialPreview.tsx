@@ -1,6 +1,41 @@
-import { detectFileKind } from "@/lib/fileKind";
+import { detectFileKind, youtubeId } from "@/lib/fileKind";
 
-export function MaterialPreview({ url, fileName }: { url: string; fileName: string }) {
+export function MaterialPreview({
+  url,
+  fileName,
+}: {
+  url: string;
+  fileName: string | null;
+}) {
+  const ytId = youtubeId(url);
+
+  if (ytId) {
+    return (
+      <div className="aspect-video w-full max-w-sm overflow-hidden rounded-xl">
+        <iframe
+          src={`https://www.youtube.com/embed/${ytId}`}
+          title={fileName ?? "Video de YouTube"}
+          className="h-full w-full"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        />
+      </div>
+    );
+  }
+
+  if (!fileName) {
+    return (
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-block rounded-full border border-border px-4 py-1.5 text-xs font-semibold hover:bg-cream-dark"
+      >
+        🔗 Ver enlace
+      </a>
+    );
+  }
+
   const kind = detectFileKind(fileName);
 
   if (kind === "video") {

@@ -2,14 +2,8 @@
 
 import { useRef, useState, useTransition } from "react";
 import { createLibraryItem, deleteLibraryItem } from "@/app/dashboard/biblioteca/actions";
+import { youtubeId } from "@/lib/fileKind";
 import type { LibraryItem } from "@/lib/database.types";
-
-function youtubeId(url: string): string | null {
-  const match = url.match(
-    /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
-  );
-  return match ? match[1] : null;
-}
 
 function LibraryCard({
   item,

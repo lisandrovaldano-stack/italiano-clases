@@ -2,11 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { youtubeId } from "@/lib/fileKind";
 import type { LibraryKind } from "@/lib/database.types";
-
-function detectYouTube(url: string): boolean {
-  return /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)/.test(url);
-}
 
 export async function createLibraryItem(
   formData: FormData
@@ -46,7 +43,7 @@ export async function createLibraryItem(
     kind = file.type.startsWith("image/") ? "image" : "file";
   } else {
     finalUrl = url;
-    kind = detectYouTube(url) ? "youtube" : "link";
+    kind = youtubeId(url) ? "youtube" : "link";
   }
 
   const { error: insertError } = await supabase.from("library_items").insert({

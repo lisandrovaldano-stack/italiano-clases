@@ -40,7 +40,52 @@ export async function updateCourse(formData: FormData) {
   revalidatePath(`/dashboard/curso/${courseId}`);
 }
 
-export async function createSession(formData: FormData) {
+type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
+
+async function attachMaterial(
+  supabase: SupabaseServerClient,
+  sessionId: string,
+  courseId: string,
+  file: File | null,
+  url: string
+): Promise<{ error?: string }> {
+  if ((!file || file.size === 0) && !url) return {};
+
+  let finalUrl: string;
+  let fileName: string | null = null;
+
+  if (file && file.size > 0) {
+    const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, "_");
+    const path = `${courseId}/${sessionId}-${Date.now()}-${safeName}`;
+    const { error: uploadError } = await supabase.storage
+      .from("materiales")
+      .upload(path, file, { upsert: true });
+
+    if (uploadError) {
+      return { error: `No se pudo subir el archivo: ${uploadError.message}` };
+    }
+
+    const { data } = supabase.storage.from("materiales").getPublicUrl(path);
+    finalUrl = data.publicUrl;
+    fileName = file.name;
+  } else {
+    finalUrl = url;
+  }
+
+  const { error: insertError } = await supabase.from("materials").insert({
+    session_id: sessionId,
+    file_name: fileName,
+    url: finalUrl,
+  });
+
+  if (insertError) {
+    return { error: `No se pudo guardar el material: ${insertError.message}` };
+  }
+
+  return {};
+}
+
+export async function createSession(formData: FormData): Promise<{ error?: string }> {
   const courseId = String(formData.get("course_id"));
   const supabase = await createClient();
 
@@ -49,16 +94,33 @@ export async function createSession(formData: FormData) {
     .select("id", { count: "exact", head: true })
     .eq("course_id", courseId);
 
-  await supabase.from("class_sessions").insert({
-    course_id: courseId,
-    numero: (count ?? 0) + 1,
-    fecha: String(formData.get("fecha")),
-    temario: String(formData.get("temario") ?? "") || null,
-    estado: String(formData.get("estado")) as SessionStatus,
-  });
+  const { data: session, error: insertError } = await supabase
+    .from("class_sessions")
+    .insert({
+      course_id: courseId,
+      numero: (count ?? 0) + 1,
+      fecha: String(formData.get("fecha")),
+      temario: String(formData.get("temario") ?? "") || null,
+      estado: String(formData.get("estado")) as SessionStatus,
+    })
+    .select()
+    .single();
+
+  if (insertError || !session) {
+    return { error: `No se pudo crear el encuentro: ${insertError?.message}` };
+  }
+
+  const file = formData.get("file") as File | null;
+  const url = String(formData.get("url") ?? "").trim();
+  const materialResult = await attachMaterial(supabase, session.id, courseId, file, url);
 
   revalidatePath(`/admin/curso/${courseId}`);
   revalidatePath(`/dashboard/curso/${courseId}`);
+
+  if (materialResult.error) {
+    return { error: `El encuentro se creó, pero: ${materialResult.error}` };
+  }
+  return {};
 }
 
 export async function deleteSession(formData: FormData) {
@@ -92,38 +154,19 @@ export async function uploadMaterial(
 ): Promise<{ error?: string }> {
   const sessionId = String(formData.get("session_id"));
   const courseId = String(formData.get("course_id"));
-  const file = formData.get("file") as File;
+  const file = formData.get("file") as File | null;
+  const url = String(formData.get("url") ?? "").trim();
 
-  if (!file || file.size === 0) {
-    return { error: "Elegí un archivo primero." };
+  if ((!file || file.size === 0) && !url) {
+    return { error: "Pegá un link o subí un archivo." };
   }
 
   const supabase = await createClient();
-  const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, "_");
-  const path = `${courseId}/${sessionId}-${Date.now()}-${safeName}`;
-
-  const { error } = await supabase.storage
-    .from("materiales")
-    .upload(path, file, { upsert: true });
-
-  if (error) {
-    return { error: `No se pudo subir el archivo: ${error.message}` };
-  }
-
-  const { data } = supabase.storage.from("materiales").getPublicUrl(path);
-  const { error: insertError } = await supabase.from("materials").insert({
-    session_id: sessionId,
-    file_name: file.name,
-    url: data.publicUrl,
-  });
-
-  if (insertError) {
-    return { error: `Se subió el archivo pero no se pudo guardar: ${insertError.message}` };
-  }
+  const result = await attachMaterial(supabase, sessionId, courseId, file, url);
 
   revalidatePath(`/admin/curso/${courseId}`);
   revalidatePath(`/dashboard/curso/${courseId}`);
-  return {};
+  return result;
 }
 
 export async function removeMaterial(

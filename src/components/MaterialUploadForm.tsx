@@ -14,32 +14,33 @@ export function MaterialUploadForm({
   courseId: string;
   materials: Material[];
 }) {
-  const fileRef = useRef<HTMLInputElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
   const [error, setError] = useState("");
   const [isUploading, startUploadTransition] = useTransition();
   const [removingId, setRemovingId] = useState<string | null>(null);
   const [, startRemoveTransition] = useTransition();
 
-  function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const file = fileRef.current?.files?.[0];
-    if (!file) {
-      setError("Elegí un archivo primero.");
+    const fd = new FormData(e.currentTarget);
+    const file = fd.get("file") as File | null;
+    const url = String(fd.get("url") ?? "").trim();
+
+    if ((!file || file.size === 0) && !url) {
+      setError("Pegá un link o subí un archivo.");
       return;
     }
 
-    const fd = new FormData();
     fd.set("session_id", sessionId);
     fd.set("course_id", courseId);
-    fd.set("file", file);
     setError("");
 
     startUploadTransition(async () => {
       const result = await uploadMaterial(fd);
       if (result?.error) {
         setError(result.error);
-      } else if (fileRef.current) {
-        fileRef.current.value = "";
+      } else {
+        formRef.current?.reset();
       }
     });
   }
@@ -62,8 +63,13 @@ export function MaterialUploadForm({
 
   return (
     <div className="mt-3 space-y-2">
-      <form onSubmit={handleSubmit} className="flex flex-wrap items-center gap-2">
-        <input ref={fileRef} type="file" className="text-xs" />
+      <form ref={formRef} onSubmit={handleSubmit} className="flex flex-wrap items-center gap-2">
+        <input
+          name="url"
+          placeholder="Link de YouTube u otro enlace"
+          className="min-w-[12rem] flex-1 rounded-xl border border-border bg-cream-dark px-3 py-1.5 text-xs outline-none focus:border-primary"
+        />
+        <input type="file" name="file" className="text-xs" />
         <button
           type="submit"
           disabled={isUploading}
