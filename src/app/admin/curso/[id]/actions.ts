@@ -194,6 +194,58 @@ export async function createTask(formData: FormData): Promise<{ error?: string }
   return {};
 }
 
+export async function updateTask(formData: FormData): Promise<{ error?: string }> {
+  const taskId = String(formData.get("task_id"));
+  const courseId = String(formData.get("course_id"));
+  const sessionId = String(formData.get("session_id"));
+  const title = String(formData.get("title") ?? "").trim();
+  const description = String(formData.get("description") ?? "") || null;
+  const dueDate = String(formData.get("due_date") ?? "") || null;
+  const file = formData.get("file") as File | null;
+
+  if (!title) {
+    return { error: "Poné un título para la tarea." };
+  }
+
+  const supabase = await createClient();
+  const update: {
+    title: string;
+    description: string | null;
+    due_date: string | null;
+    file_name?: string;
+    file_url?: string;
+  } = { title, description, due_date: dueDate };
+
+  if (file && file.size > 0) {
+    const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, "_");
+    const path = `${courseId}/tareas/${sessionId}-${Date.now()}-${safeName}`;
+    const { error: uploadError } = await supabase.storage
+      .from("materiales")
+      .upload(path, file, { upsert: true });
+
+    if (uploadError) {
+      return { error: `No se pudo subir el archivo: ${uploadError.message}` };
+    }
+
+    const { data } = supabase.storage.from("materiales").getPublicUrl(path);
+    update.file_url = data.publicUrl;
+    update.file_name = file.name;
+  }
+
+  const { error: updateError } = await supabase
+    .from("tasks")
+    .update(update)
+    .eq("id", taskId);
+
+  if (updateError) {
+    return { error: `No se pudo guardar la tarea: ${updateError.message}` };
+  }
+
+  revalidatePath(`/admin/curso/${courseId}`);
+  revalidatePath(`/dashboard/curso/${courseId}`);
+  return {};
+}
+
 export async function deleteTask(formData: FormData): Promise<{ error?: string }> {
   const taskId = String(formData.get("task_id"));
   const courseId = String(formData.get("course_id"));
