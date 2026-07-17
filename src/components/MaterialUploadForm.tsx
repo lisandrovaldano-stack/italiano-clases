@@ -2,6 +2,7 @@
 
 import { useRef, useState, useTransition } from "react";
 import { uploadMaterial, removeMaterial } from "@/app/admin/curso/[id]/actions";
+import { MaterialPreview } from "@/components/MaterialPreview";
 import type { Material } from "@/lib/database.types";
 
 export function MaterialUploadForm({
@@ -74,20 +75,13 @@ export function MaterialUploadForm({
       {error && <p className="text-xs text-accent">{error}</p>}
 
       {materials.length > 0 && (
-        <ul className="space-y-1.5">
+        <ul className="space-y-2">
           {materials.map((m) => (
             <li
               key={m.id}
-              className="flex items-center justify-between gap-2 rounded-lg bg-cream-dark px-3 py-1.5"
+              className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-cream-dark px-3 py-2"
             >
-              <a
-                href={m.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="truncate text-xs font-semibold text-primary hover:underline"
-              >
-                ↓ {m.file_name}
-              </a>
+              <MaterialPreview url={m.url} fileName={m.file_name} />
               <button
                 type="button"
                 onClick={() => handleRemove(m.id)}

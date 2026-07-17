@@ -1,3 +1,4 @@
+import { MaterialPreview } from "@/components/MaterialPreview";
 import type { ClassSession, Material, Task } from "@/lib/database.types";
 
 const ESTADO_LABEL: Record<string, { label: string; className: string }> = {
@@ -61,17 +62,9 @@ export function SessionRow({
           <p className="text-sm text-foreground/70">{session.temario}</p>
         )}
         {materials.length > 0 && (
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-3">
             {materials.map((m) => (
-              <a
-                key={m.id}
-                href={m.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block rounded-full border border-border px-4 py-1.5 text-xs font-semibold hover:bg-cream-dark"
-              >
-                ↓ {m.file_name}
-              </a>
+              <MaterialPreview key={m.id} url={m.url} fileName={m.file_name} />
             ))}
           </div>
         )}
