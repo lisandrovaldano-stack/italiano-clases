@@ -40,6 +40,14 @@ export async function Header() {
           )}
           {profile && (
             <Link
+              href="/dashboard/biblioteca"
+              className="rounded-full border border-border px-4 py-2 text-sm font-semibold hover:bg-cream-dark"
+            >
+              Biblioteca
+            </Link>
+          )}
+          {profile && (
+            <Link
               href="/dashboard/traductor"
               className="rounded-full bg-accent px-4 py-2 text-sm font-semibold text-white hover:opacity-90"
             >

@@ -67,6 +67,18 @@ export type Task = {
   created_at: string;
 };
 
+export type LibraryKind = "youtube" | "image" | "file" | "link";
+
+export type LibraryItem = {
+  id: string;
+  title: string;
+  description: string | null;
+  kind: LibraryKind;
+  url: string;
+  file_name: string | null;
+  created_at: string;
+};
+
 export type Database = {
   public: {
     Tables: {
@@ -125,6 +137,12 @@ export type Database = {
         Row: Task;
         Insert: Partial<Task>;
         Update: Partial<Task>;
+        Relationships: [];
+      };
+      library_items: {
+        Row: LibraryItem;
+        Insert: Partial<LibraryItem>;
+        Update: Partial<LibraryItem>;
         Relationships: [];
       };
     };
