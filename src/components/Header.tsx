@@ -33,7 +33,7 @@ export async function Header() {
           {profile && (
             <Link
               href={profile.role === "teacher" ? "/admin" : "/dashboard"}
-              className="rounded-full bg-primary-dark px-4 py-2 text-sm font-semibold text-white hover:opacity-90"
+              className="rounded-full border border-border px-4 py-2 text-sm font-semibold hover:bg-cream-dark"
             >
               {profile.role === "teacher" ? "Panel de profesora" : "Mis cursos"}
             </Link>
